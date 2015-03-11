@@ -6,6 +6,22 @@ Not all windows should be managed by bug.n the same way, or even may not be
 managable at all. To handle windows differently, you can add rules to the
 configuration.
 
+The general format of a rule added to `Config.ini` is as follows (all in one
+line, ";" is not allowed as a character in the field values):
+
+```
+Config_rule=<class>;
+            <title>;
+            <function name>;
+            <is managed>;
+            <monitor>;
+            <views / tags>;
+            <is floating>;
+            <is decorated>;
+            <hide title>;
+            <action on a single window>
+```
+
 With the first part of the rule, you identify the window using the
 following information:
 
@@ -27,17 +43,18 @@ removed.
 6. Should the title text be hidden in the bug.n bar (0 = no, 1 = yes)?
 7. A special single window action (`close` or `maximize` or blank).
 
-The general format of a rule added to `Config.ini` is as follows:
-`Config_rule=<class>;<title>;<function name>;<is managed>;<monitor>;<views /
-tags>;<is floating>;<is decorated>;<hide title>;<action on a single window>`
-(all in one line, ";" is not allowed as a character in the field values)
-
 If you want to replace a rule, which is already set in `Config.ahk`, you will
 have to use the correct variable name; e. g. you may set a default rule
 (identifying part: `.*;.*;`), overwriting the first rule set in `Config.ahk`,
 by using the variable name `Config_rule_#1`. If you want to _add_ a rule,
 simply use `Config_rule` as the variable name; the numbering will be done
 automatically by bug.n when reading `Config.ini` using the order given there.
+
+To get a draft for a new rule, you can use the hotkey
+`#i::Manager_getWindowInfo()` (<kbd>Win</kbd><kbd>I</kbd>), which will give the
+full class and title, additional information about and the current values for
+the active window included in a string, which can be copied to the
+`Config.ini`.
 
 #### Views / Tags
 
@@ -67,3 +84,17 @@ The following `Config.ini` line adds a rule, putting windows of 'Mozilla
 Thunderbird' on view 4, keeping the title bar visible and maximizing them.
 
 `Config_rule=MozillaWindowClass;.*Mozilla Thunderbird;;1;0;8;0;1;0;maximize`
+
+#### GNU Emacs
+
+The following rule avoids the gaps, which would be the result of Emacs'
+line-oriented resizing of its own windows (frames).
+
+`Config_rule=Emacs;.*;;1;0;0;0;0;0;maximize`
+
+#### Atlassian SourceTree
+
+The following rule excludes the confirmation dialog for removing files from the
+working copy from being managed by bug.n.
+
+`Config_rule=.*SourceTree.*;Confirm Remove Modified or Untracked Files?;;0;0;0;1;1;0;`
