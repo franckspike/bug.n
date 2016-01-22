@@ -85,6 +85,7 @@ View_activateWindow(i, d = 0) {
 View_addWindow(m, v, wndId) {
   Local i, mSplit, n, replace, search
 
+  StringReplace, View_#%m%_#%v%_wndIds, View_#%m%_#%v%_wndIds, % wndId ";",, All
   If Tiler_isActive(m, v) And ((Config_newWndPosition = "masterBottom") Or (Config_newWndPosition = "stackTop")) {
     n := View_getTiledWndIds(m, v)
     mSplit := View_#%m%_#%v%_layoutMX * View_#%m%_#%v%_layoutMY
@@ -200,6 +201,34 @@ View_ghostWindow(m, v, bodyWndId, ghostWndId)
   search := bodyWndId ";"
   replace := search ghostWndId ";"
   StringReplace, View_#%m%_#%v%_wndIds, View_#%m%_#%v%_wndIds, %search%, %replace%
+}
+
+View_moveToIndex(m, v, n, w) {
+  Local wndIds
+
+  View_#%n%_#%w%_area_#0        := View_#%m%_#%v%_area_#0
+  View_#%n%_#%w%_aWndIds        := View_#%m%_#%v%_aWndIds
+  View_#%n%_#%w%_layout_#1      := View_#%m%_#%v%_layout_#1
+  View_#%n%_#%w%_layout_#2      := View_#%m%_#%v%_layout_#2
+  View_#%n%_#%w%_layoutAxis_#1  := View_#%m%_#%v%_layoutAxis_#1
+  View_#%n%_#%w%_layoutAxis_#2  := View_#%m%_#%v%_layoutAxis_#2
+  View_#%n%_#%w%_layoutAxis_#3  := View_#%m%_#%v%_layoutAxis_#3
+  View_#%n%_#%w%_layoutGapWidth := View_#%m%_#%v%_layoutGapWidth
+  View_#%n%_#%w%_layoutMFact    := View_#%m%_#%v%_layoutMFact
+  View_#%n%_#%w%_layoutMX       := View_#%m%_#%v%_layoutMX
+  View_#%n%_#%w%_layoutMY       := View_#%m%_#%v%_layoutMY
+  View_#%n%_#%w%_layoutSymbol   := View_#%m%_#%v%_layoutSymbol
+  View_#%n%_#%w%_margins        := View_#%m%_#%v%_margins
+  View_#%n%_#%w%_showStackArea  := View_#%m%_#%v%_showStackArea
+  View_#%n%_#%w%_wndIds         := View_#%m%_#%v%_wndIds
+  StringSplit, View_#%n%_#%w%_margin, View_#%n%_#%w%_margin, `;
+  StringTrimRight, wndIds, View_#%n%_#%w%_wndIds, 1
+  Loop, PARSE, wndIds, `;
+  {
+    Window_#%A_LoopField%_monitor := n
+    Window_#%A_LoopField%_tags -= 1 << v - 1
+    Window_#%A_LoopField%_tags += 1 << w - 1
+  }
 }
 
 ; @TODO: Theoretically, something is wrong here. From the hotkeys this should be manual tiling, but the function says otherwise.
